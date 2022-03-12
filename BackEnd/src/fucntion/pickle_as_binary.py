@@ -14,5 +14,5 @@ bm25title = BM25()
 bm25ingre = BM25()
 bm25_title_fit = bm25title.fit(title)
 bm25_ingre_fit = bm25ingre.fit(ingredient)
-pickle.dump((bm25_title_fit, bm25_ingre_fit), open('../../resource/bm25_title_fit.pkl', 'wb'))
+pickle.dump((bm25_title_fit, bm25_ingre_fit), open('../../resource/bm25.pkl', 'wb'))
 

@@ -51,4 +51,4 @@ if __name__ == '__main__':
     bm25ingre = BM25()
     bm25title.fit(df['Title'])
     bm25ingre.fit(df['Ingredients'])
-    pickle.dump((bm25title, bm25ingre), open('../../resource/bm25_title_fit.pkl', 'wb'))
+    pickle.dump((bm25title, bm25ingre), open('../../resource/bm25.pkl', 'wb'))
