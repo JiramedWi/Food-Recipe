@@ -2,7 +2,8 @@
 __pycache__/
 *.py[cod]
 *$py.class
-
+BackEnd/resource/Food_Images/image_of_food/
+.idea/
 # C extensions
 *.so
 
