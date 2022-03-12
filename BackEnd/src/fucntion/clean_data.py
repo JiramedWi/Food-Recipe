@@ -12,9 +12,11 @@ import csv
 ureg = list(pint.UnitRegistry())
 # df = pd.read_csv('D:/Git/Repositories/Food-Recipe/BackEnd/resource/food_recipe_and_ingredients_with_img.csv')
 df = pd.read_csv('../../resource/food_recipe_and_ingredients_with_img.csv')
+df_clean = pd.read_csv('../../resource/food_cleaned.csv')
 
 df_not_null = df.copy().dropna().reset_index(drop=True)
 print(df_not_null.shape)
+
 
 def clean_text(text):
     text = ' '.join([c.lower() for c in str(text).split() if len(c) > 2])
@@ -36,12 +38,29 @@ def clean_text_ingre(text):
     return text
 
 
-df_not_null['Title'] = df_not_null['Title'].apply(clean_text)
-# print(df_not_null.head(10).to_markdown())
+# def merge_dict():
+#     text = df_clean['Title']
+#     with open('../../resource/tile.txt', 'w') as f:
+#         for s in text.tolist():
+#             f.write(s + ' ')
+#     text1 = df_clean['Ingredients']
 #
-df_not_null['Ingredients'] = df_not_null['Ingredients'].apply(clean_text_ingre)
-# print(df_not_null.head(25).to_markdown())
+#     with open('../../resource/ingre.txt', 'w') as f:
+#         for s in text1.tolist():
+#             f.write(s + ' ')
 #
-# df_not_null.to_csv('../../resource/food_cleaned.csv')
+#     with open('../../resource/mergedict.txt', 'w') as outfile:
+#         for names in ['../../resource/tile.txt', '../../resource/ingre.txt']:
+#             with open(names) as infile:
+#                 outfile.write(infile.read())
+#             outfile.write(" ")
 
-pickle.dump(df_not_null, open('../../resource/food_cleaned.pkl', 'wb'))
+# df_not_null['Title'] = df_not_null['Title'].apply(clean_text)
+# # print(df_not_null.head(10).to_markdown())
+# #
+# df_not_null['Ingredients'] = df_not_null['Ingredients'].apply(clean_text_ingre)
+# # print(df_not_null.head(25).to_markdown())
+# #
+# # df_not_null.to_csv('../../resource/food_cleaned.csv')
+#
+# pickle.dump(df_not_null, open('../../resource/food_cleaned.pkl', 'wb'))
