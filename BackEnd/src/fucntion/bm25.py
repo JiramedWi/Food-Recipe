@@ -43,12 +43,14 @@ class BM25(object):
 
 
 # ------------ End of library impl. Followings are the example -----------------
-if __name__ == '__main__':
-    df = pickle.load(open('../../resource/food_cleaned.pkl', 'rb'))
-    # title = df['Title']
-    # ingredient = df['Ingredients']
-    bm25title = BM25()
-    bm25ingre = BM25()
-    bm25title.fit(df['Title'])
-    bm25ingre.fit(df['Ingredients'])
-    pickle.dump((bm25title, bm25ingre), open('../../resource/bm25.pkl', 'wb'))
+# if __name__ == '__main__':
+#     df = pickle.load(open('../../resource/food_cleaned.pkl', 'rb'))
+#     # title = df['Title']
+#     # ingredient = df['Ingredients']
+#     bm25title = BM25()
+#     bm25ingre = BM25()
+#     bm25title.fit(df['Title'])
+#     bm25ingre.fit(df['Ingredients'])
+#     pickle.dump(bm25title, open('../../resource/bm25_title.pkl', 'wb'))
+#     pickle.dump(bm25ingre, open('../../resource/bm25_ingre.pkl', 'wb'))
+

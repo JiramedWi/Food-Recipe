@@ -8,11 +8,12 @@ from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.feature_extraction.text import TfidfVectorizer
 
 df = pickle.load(open('../../resource/food_cleaned.pkl', 'rb'))
-title = df['Title']
-ingredient = df['Ingredients']
+# title = df['Title']
+# ingredient = df['Ingredients']
 bm25title = BM25()
 bm25ingre = BM25()
-bm25_title_fit = bm25title.fit(title)
-bm25_ingre_fit = bm25ingre.fit(ingredient)
-pickle.dump((bm25_title_fit, bm25_ingre_fit), open('../../resource/bm25.pkl', 'wb'))
+bm25title.fit(df['Title'])
+bm25ingre.fit(df['Ingredients'])
+pickle.dump(bm25title, open('../../resource/bm25_title.pkl', 'wb'))
+pickle.dump(bm25ingre, open('../../resource/bm25_ingre.pkl', 'wb'))
 
