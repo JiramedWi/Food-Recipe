@@ -38,3 +38,13 @@ def ingredient_ranking(query):
     tf = tf.drop(columns='bm25', axis=1)
     tf = tf.to_dict('record')
     return tf
+
+
+def getdataframe():
+    df = pd.DataFrame(
+        {'id': list(food_df.index), 'Title': list(food_df['Title']),
+         'Ingredient': list(food_df['Cleaned_Ingredients']),
+         'Instructions': list(food_df['Instructions']),
+         'Image': list(food_df['Image_Name'].apply(lambda s: s + '.jpg'))})
+    return df
+
