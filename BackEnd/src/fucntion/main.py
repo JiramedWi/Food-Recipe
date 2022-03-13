@@ -6,7 +6,7 @@ from flask_cors import CORS
 import jwt
 import datetime
 from functools import wraps
-from fucntion.fuction import title_ranking, ingredient_ranking
+from fucntion.fuction import getdataframe, bookmark_ranking, home_ranking, get_word
 from spellchecker import SpellChecker
 import mysql.connector
 
@@ -28,32 +28,47 @@ password = ""
 db = "user"
 
 
-@app.route("/ranking/title", methods=['POST'])
-def rankingtitle():
+@app.route("/api/home")
+def homesuggest():
+    query = get_word()
+    query = query.lower().translate(str.maketrans('', '', string.punctuation))
+    result = home_ranking(query)
+    result = {'suggestion': query, 'result': result}
+    return make_response(jsonify(result), 200)
+
+
+@app.route("/api/ranking/home", methods=['POST'])
+def rankinghome():
     arg1 = request.args['query']
     arg1 = arg1.replace(' ', '')
     arg1 = arg1.lower().translate(str.maketrans('', '', string.punctuation))
     query = arg1
     query = spell_corr(query)[0]
-    result = title_ranking(query)
+    result = home_ranking(query)
     result = {'result': result, 'correction': query}
     return make_response(jsonify(result), 200)
 
 
-@app.route("/ranking/ingredient", methods=['POST'])
-def rankingingred():
-    arg1 = request.args['query']
-    arg1 = arg1.replace(' ', '')
-    arg1 = arg1.lower().translate(str.maketrans('', '', string.punctuation))
-    query = arg1
+@app.route("/api/ranking/bookmark", methods=['POST'])
+def rankingbookmark():
+    user_id = request.args['userid']
+    query = request.args['query']
+    mydb = mysql.connector.connect(host=host, user=user, password=password, db=db)
+    mycursor = mydb.cursor(dictionary=True)
+    sql = "SELECT food_id FROM user_bookmark WHERE user_id = %s"
+    val = (user_id,)
+    mycursor.execute(sql, val)
+    myresult = list(mycursor.fetchall())
+    menulist = [w['food_id'] for w in myresult]
+    print(menulist)
+
     query = spell_corr(query)[0]
-    result = ingredient_ranking(query)
+    result = bookmark_ranking(query, menulist)
     result = {'result': result, 'correction': query}
-
     return make_response(jsonify(result), 200)
 
 
-@app.route("/login", methods=['POST'])
+@app.route("/api/login", methods=['POST'])
 def login():
     user_name = request.args['username']
     pass_word = request.args['password']
@@ -65,9 +80,10 @@ def login():
     row = mycursor.fetchone()
     userdb = row['username']
     passdb = row['password']
+    iddb = row['id']
     if row:
         if passdb == pass_word:
-            userNpass = ({"username": userdb, "password": passdb, "message": "success"})
+            userNpass = ({"username": userdb, "password": passdb, "id": iddb, "message": "success"})
             return jsonify(userNpass), 200
         else:
             return jsonify({"message": "Bad request"}), 400
@@ -88,48 +104,50 @@ def createuser():
     return make_response(jsonify({"message": "success"}), 200)
 
 
-# @app.route("/api/user")
-# def getuser():
-#     mydb = mysql.connector.connect(host=host, user=user, password=password, db=db)
-#     mycursor = mydb.cursor(dictionary=True)
-#     mycursor.execute("SELECT * FROM user")
-#     myresult = mycursor.fetchall()
-#     print(myresult)
-#     return make_response(jsonify(myresult), 200)
-#
-#
-# @app.route("/api/user/<id>")
-# def getuserbyid(id):
-#     mydb = mysql.connector.connect(host=host, user=user, password=password, db=db)
-#     mycursor = mydb.cursor(dictionary=True)
-#     sql = "SELECT * FROM user WHERE id = %s"
-#     val = (id,)
-#     mycursor.execute(sql, val)
-#     myresult = mycursor.fetchall()
-#     return make_response(jsonify(myresult), 200)
+@app.route("/api/bookmark")
+def getbookmark():
+    user_id = request.args['userid']
+    mydb = mysql.connector.connect(host=host, user=user, password=password, db=db)
+    mycursor = mydb.cursor(dictionary=True)
+    sql = "SELECT food_id FROM user_bookmark WHERE user_id = %s"
+    val = (user_id,)
+    mycursor.execute(sql, val)
+    myresult = list(mycursor.fetchall())
+    menulist = [w['food_id'] for w in myresult]
+
+    df = getdataframe()
+    df = df.iloc[menulist]
+    df = df.to_dict('record')
+    myresult = ({"message": "success", "result": df})
+    return make_response(jsonify(myresult), 200)
 
 
-# @app.route("/api/user/<id>", methods=['PUT'])
-# def updateuser(id):
-#     data = request.get_json()
-#     mydb = mysql.connector.connect(host=host, user=user, password=password, db=db)
-#     mycursor = mydb.cursor(dictionary=True)
-#     sql = "UPDATE user SET username = %s, password = %s, email = %s WHERE id = %s"
-#     val = (data['username'], data['password'], data['email'], id)
-#     mycursor.execute(sql, val)
-#     mydb.commit()
-#     return make_response(jsonify({"rowcount": mycursor.rowcount}), 200)
-#
-#
-# @app.route("/api/user/<id>", methods=['DELETE'])
-# def deleteuser(id):
-#     mydb = mysql.connector.connect(host=host, user=user, password=password, db=db)
-#     mycursor = mydb.cursor(dictionary=True)
-#     sql = "DELETE FROM user WHERE id = %s"
-#     val = (id,)
-#     mycursor.execute(sql, val)
-#     mydb.commit()
-#     return make_response(jsonify({"rowcount": mycursor.rowcount}), 200)
+@app.route("/api/bookmark", methods=['POST'])
+def addbookmark():
+    user_id = request.args['userid']
+    id_food = request.args['foodid']
+    mydb = mysql.connector.connect(host=host, user=user, password=password, db=db)
+    mycursor = mydb.cursor(dictionary=True)
+
+    sql_user_bookmark = "INSERT INTO user_bookmark (user_id, food_id) VALUE (%s,%s)"
+    val = (user_id, id_food)
+    mycursor.execute(sql_user_bookmark, val)
+    mydb.commit()
+    result = ({"message": "success", "user_id": user_id, "food_id": id_food})
+    return make_response(jsonify(result), 200)
+
+
+@app.route("/api/bookmark", methods=['DELETE'])
+def deletebookmark():
+    user_id = request.args['userid']
+    food_id = request.args['foodid']
+    mydb = mysql.connector.connect(host=host, user=user, password=password, db=db)
+    mycursor = mydb.cursor(dictionary=True)
+    sql = "DELETE FROM user_bookmark WHERE user_id = %s AND food_id = %s"
+    val = (user_id, food_id)
+    mycursor.execute(sql, val)
+    mydb.commit()
+    return make_response(jsonify({"message": "success"}), 200)
 
 
 if __name__ == '__main__':
