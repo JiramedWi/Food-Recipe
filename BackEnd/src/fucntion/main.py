@@ -53,70 +53,83 @@ def rankingingred():
     return make_response(jsonify(result), 200)
 
 
-@app.route("/api/user")
-def getuser():
+@app.route("/login", methods=['POST'])
+def login():
+    user_name = request.args['username']
+    pass_word = request.args['password']
     mydb = mysql.connector.connect(host=host, user=user, password=password, db=db)
     mycursor = mydb.cursor(dictionary=True)
-    mycursor.execute("SELECT * FROM user")
-    myresult = mycursor.fetchall()
-    print(myresult)
-    return make_response(jsonify(myresult), 200)
-
-
-@app.route("/api/user")
-def getuser():
-    mydb = mysql.connector.connect(host=host, user=user, password=password, db=db)
-    mycursor = mydb.cursor(dictionary=True)
-    mycursor.execute("SELECT * FROM user")
-    myresult = mycursor.fetchall()
-    print(myresult)
-    return make_response(jsonify(myresult), 200)
-
-
-@app.route("/api/user/<id>")
-def getuserbyid(id):
-    mydb = mysql.connector.connect(host=host, user=user, password=password, db=db)
-    mycursor = mydb.cursor(dictionary=True)
-    sql = "SELECT * FROM user WHERE id = %s"
-    val = (id,)
+    sql = "SELECT * FROM user WHERE username = %s"
+    val = (user_name,)
     mycursor.execute(sql, val)
-    myresult = mycursor.fetchall()
-    return make_response(jsonify(myresult), 200)
+    row = mycursor.fetchone()
+    userdb = row['username']
+    passdb = row['password']
+    if row:
+        if passdb == pass_word:
+            userNpass = ({"username": userdb, "password": passdb, "message": "success"})
+            return jsonify(userNpass), 200
+        else:
+            return jsonify({"message": "Bad request"}), 400
+    else:
+        return jsonify({"message": "Bad request"}), 400
 
 
 @app.route("/api/user", methods=['POST'])
 def createuser():
-    data = request.get_json()
+    user_name = request.args['username']
+    pass_word = request.args['password']
     mydb = mysql.connector.connect(host=host, user=user, password=password, db=db)
     mycursor = mydb.cursor(dictionary=True)
-    sql = "INSERT INTO user (username, password, email) VALUE (%s,%s,%s)"
-    val = (data['username'], data['password'], data['email'])
+    sql = "INSERT INTO user (username, password) VALUE (%s,%s)"
+    val = (user_name, pass_word)
     mycursor.execute(sql, val)
     mydb.commit()
-    return make_response(jsonify({"rowcount": mycursor.rowcount}), 200)
+    return make_response(jsonify({"message": "success"}), 200)
 
 
-@app.route("/api/user/<id>", methods=['PUT'])
-def updateuser(id):
-    data = request.get_json()
-    mydb = mysql.connector.connect(host=host, user=user, password=password, db=db)
-    mycursor = mydb.cursor(dictionary=True)
-    sql = "UPDATE user SET username = %s, password = %s, email = %s WHERE id = %s"
-    val = (data['username'], data['password'], data['email'], id)
-    mycursor.execute(sql, val)
-    mydb.commit()
-    return make_response(jsonify({"rowcount": mycursor.rowcount}), 200)
+# @app.route("/api/user")
+# def getuser():
+#     mydb = mysql.connector.connect(host=host, user=user, password=password, db=db)
+#     mycursor = mydb.cursor(dictionary=True)
+#     mycursor.execute("SELECT * FROM user")
+#     myresult = mycursor.fetchall()
+#     print(myresult)
+#     return make_response(jsonify(myresult), 200)
+#
+#
+# @app.route("/api/user/<id>")
+# def getuserbyid(id):
+#     mydb = mysql.connector.connect(host=host, user=user, password=password, db=db)
+#     mycursor = mydb.cursor(dictionary=True)
+#     sql = "SELECT * FROM user WHERE id = %s"
+#     val = (id,)
+#     mycursor.execute(sql, val)
+#     myresult = mycursor.fetchall()
+#     return make_response(jsonify(myresult), 200)
 
 
-@app.route("/api/user/<id>", methods=['DELETE'])
-def deleteuser(id):
-    mydb = mysql.connector.connect(host=host, user=user, password=password, db=db)
-    mycursor = mydb.cursor(dictionary=True)
-    sql = "DELETE FROM user WHERE id = %s"
-    val = (id,)
-    mycursor.execute(sql, val)
-    mydb.commit()
-    return make_response(jsonify({"rowcount": mycursor.rowcount}), 200)
+# @app.route("/api/user/<id>", methods=['PUT'])
+# def updateuser(id):
+#     data = request.get_json()
+#     mydb = mysql.connector.connect(host=host, user=user, password=password, db=db)
+#     mycursor = mydb.cursor(dictionary=True)
+#     sql = "UPDATE user SET username = %s, password = %s, email = %s WHERE id = %s"
+#     val = (data['username'], data['password'], data['email'], id)
+#     mycursor.execute(sql, val)
+#     mydb.commit()
+#     return make_response(jsonify({"rowcount": mycursor.rowcount}), 200)
+#
+#
+# @app.route("/api/user/<id>", methods=['DELETE'])
+# def deleteuser(id):
+#     mydb = mysql.connector.connect(host=host, user=user, password=password, db=db)
+#     mycursor = mydb.cursor(dictionary=True)
+#     sql = "DELETE FROM user WHERE id = %s"
+#     val = (id,)
+#     mycursor.execute(sql, val)
+#     mydb.commit()
+#     return make_response(jsonify({"rowcount": mycursor.rowcount}), 200)
 
 
 if __name__ == '__main__':
