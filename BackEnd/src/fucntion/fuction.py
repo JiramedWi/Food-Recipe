@@ -2,8 +2,8 @@ import pickle
 
 import pandas as pd
 
-from bm25 import BM25
-from pre_process import pre_process
+from fucntion.bm25 import BM25
+from fucntion.pre_process import pre_process
 
 food_df = pickle.load(open('../../resource/food_cleaned.pkl', 'rb'))
 title = pickle.load(open('../../resource/bm25_title.pkl', 'rb'))

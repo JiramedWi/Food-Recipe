@@ -1,7 +1,8 @@
 from spellchecker import SpellChecker
 
+dict = '../../resource/mergedict.txt'
 spell = SpellChecker(language='en')
-spell.word_frequency.load_text_file('../../resource/mergedict.txt')
+spell.word_frequency.load_text_file(dict)
 
 
 def spell_corr(query):
