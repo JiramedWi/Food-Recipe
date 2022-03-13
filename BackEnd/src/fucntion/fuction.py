@@ -10,8 +10,10 @@ title = pickle.load(open('../../resource/bm25_title.pkl', 'rb'))
 ingre = pickle.load(open('../../resource/bm25_ingre.pkl', 'rb'))
 
 
-def title_ranking(query):
+def home_ranking(query):
     score = title.transform(query)
+    score_ingre = ingre.transform(query)
+    score = score + score_ingre
     tf = pd.DataFrame({'bm25': list(score),
                        'Title': list(food_df['Title']),
                        'Ingredient': list(food_df['Cleaned_Ingredients']),
@@ -25,15 +27,17 @@ def title_ranking(query):
     return tf
 
 
-def ingredient_ranking(query):
+def bookmark_ranking(query, food_id):
+    score = title.transform(query)
     score_ingre = ingre.transform(query)
-    tf = pd.DataFrame({'bm25': list(score_ingre),
+    score = score + score_ingre
+    tf = pd.DataFrame({'bm25': list(score),
                        'Title': list(food_df['Title']),
                        'Ingredient': list(food_df['Cleaned_Ingredients']),
                        'Instructions': list(food_df['Instructions']),
                        'Image': list(food_df['Image_Name'].apply(lambda s: s + '.jpg')),
-                       'id': list(food_df.index)
-                       }).nlargest(columns='bm25', n=10)
+                       })
+    tf = tf.iloc[food_id].nlargest(columns='bm25', n=10)
     tf['rank'] = tf['bm25'].rank(ascending=False)
     tf = tf.drop(columns='bm25', axis=1)
     tf = tf.to_dict('record')
@@ -47,4 +51,3 @@ def getdataframe():
          'Instructions': list(food_df['Instructions']),
          'Image': list(food_df['Image_Name'].apply(lambda s: s + '.jpg'))})
     return df
-
