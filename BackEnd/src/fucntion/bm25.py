@@ -6,7 +6,7 @@ import pickle
 import numpy as np
 from sklearn.feature_extraction.text import TfidfVectorizer
 from scipy import sparse
-from pre_process import pre_process
+from fucntion.pre_process import pre_process
 
 
 class BM25(object):
