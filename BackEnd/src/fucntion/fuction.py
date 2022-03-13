@@ -1,4 +1,5 @@
 import pickle
+import random
 
 import pandas as pd
 
@@ -8,6 +9,14 @@ from fucntion.pre_process import pre_process
 food_df = pickle.load(open('../../resource/food_cleaned.pkl', 'rb'))
 title = pickle.load(open('../../resource/bm25_title.pkl', 'rb'))
 ingre = pickle.load(open('../../resource/bm25_ingre.pkl', 'rb'))
+words = open('../../resource/mergedict.txt', 'r').read().split(' ')
+
+
+def get_word():
+    index = random.randint(0, 295375)
+    word = words[index]
+    print(word)
+    return word
 
 
 def home_ranking(query):
