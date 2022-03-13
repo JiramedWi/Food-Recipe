@@ -28,7 +28,7 @@ password = ""
 db = "user"
 
 
-@app.route("/ranking/title", methods=['POST'])
+@app.route("/api/ranking/title", methods=['POST'])
 def rankingtitle():
     arg1 = request.args['query']
     arg1 = arg1.replace(' ', '')
@@ -40,7 +40,7 @@ def rankingtitle():
     return make_response(jsonify(result), 200)
 
 
-@app.route("/ranking/ingredient", methods=['POST'])
+@app.route("/api/ranking/ingredient", methods=['POST'])
 def rankingingred():
     arg1 = request.args['query']
     arg1 = arg1.replace(' ', '')
@@ -53,7 +53,7 @@ def rankingingred():
     return make_response(jsonify(result), 200)
 
 
-@app.route("/login", methods=['POST'])
+@app.route("/api/login", methods=['POST'])
 def login():
     user_name = request.args['username']
     pass_word = request.args['password']
@@ -65,9 +65,10 @@ def login():
     row = mycursor.fetchone()
     userdb = row['username']
     passdb = row['password']
+    iddb = row['id']
     if row:
         if passdb == pass_word:
-            userNpass = ({"username": userdb, "password": passdb, "message": "success"})
+            userNpass = ({"username": userdb, "password": passdb, "id": iddb, "message": "success"})
             return jsonify(userNpass), 200
         else:
             return jsonify({"message": "Bad request"}), 400
@@ -82,6 +83,19 @@ def createuser():
     mydb = mysql.connector.connect(host=host, user=user, password=password, db=db)
     mycursor = mydb.cursor(dictionary=True)
     sql = "INSERT INTO user (username, password) VALUE (%s,%s)"
+    val = (user_name, pass_word)
+    mycursor.execute(sql, val)
+    mydb.commit()
+    return make_response(jsonify({"message": "success"}), 200)
+
+
+@app.route("/api/bookmark", methods=['POST'])
+def addbookmark():
+    user_name = request.args['username']
+    id_food = request.args['id']
+    mydb = mysql.connector.connect(host=host, user=user, password=password, db=db)
+    mycursor = mydb.cursor(dictionary=True)
+    sql = "INSERT INTO user_bookmark (username, password) VALUE (%s,%s)"
     val = (user_name, pass_word)
     mycursor.execute(sql, val)
     mydb.commit()
