@@ -16,7 +16,8 @@ def title_ranking(query):
                        'Title': list(food_df['Title']),
                        'Ingredient': list(food_df['Cleaned_Ingredients']),
                        'Instructions': list(food_df['Instructions']),
-                       'Image': list(food_df['Image_Name'].apply(lambda s: s + '.jpg'))
+                       'Image': list(food_df['Image_Name'].apply(lambda s: s + '.jpg')),
+                       'id': list(food_df.index)
                        }).nlargest(columns='bm25', n=10)
     tf['rank'] = tf['bm25'].rank(ascending=False)
     tf = tf.drop(columns='bm25', axis=1)
@@ -30,7 +31,8 @@ def ingredient_ranking(query):
                        'Title': list(food_df['Title']),
                        'Ingredient': list(food_df['Cleaned_Ingredients']),
                        'Instructions': list(food_df['Instructions']),
-                       'Image': list(food_df['Image_Name'].apply(lambda s: s + '.jpg'))
+                       'Image': list(food_df['Image_Name'].apply(lambda s: s + '.jpg')),
+                       'id': list(food_df.index)
                        }).nlargest(columns='bm25', n=10)
     tf['rank'] = tf['bm25'].rank(ascending=False)
     tf = tf.drop(columns='bm25', axis=1)
