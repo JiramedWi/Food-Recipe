@@ -6,7 +6,7 @@ from flask_cors import CORS
 import jwt
 import datetime
 from functools import wraps
-from fucntion.fuction import getdataframe, bookmark_ranking, home_ranking
+from fucntion.fuction import getdataframe, bookmark_ranking, home_ranking, get_word
 from spellchecker import SpellChecker
 import mysql.connector
 
@@ -26,6 +26,15 @@ host = "localhost"
 user = "root"
 password = ""
 db = "user"
+
+
+@app.route("/api/home")
+def homesuggest():
+    query = get_word()
+    query = query.lower().translate(str.maketrans('', '', string.punctuation))
+    result = home_ranking(query)
+    result = {'suggestion': query, 'result': result}
+    return make_response(jsonify(result), 200)
 
 
 @app.route("/api/ranking/home", methods=['POST'])
@@ -139,8 +148,6 @@ def deletebookmark():
     mycursor.execute(sql, val)
     mydb.commit()
     return make_response(jsonify({"message": "success"}), 200)
-
-
 
 
 if __name__ == '__main__':
