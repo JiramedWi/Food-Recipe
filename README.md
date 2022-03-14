@@ -5,7 +5,7 @@
 
 Using Flask to build a Restful API Server with Swagger document.
 
-Integration with Flask, Flask-Cors, mysql.connector. it began as a simple wrapper around [Werkzeug]https://werkzeug.palletsprojects.com/
+Integration with Flask, Flask-Cors, mysql.connector. it began as a simple wrapper around [Werkzeug](https://werkzeug.palletsprojects.com/)
 
 ## Installation
 
@@ -33,4 +33,4 @@ $ pip install -r requirements.txt
 2. open `database` with `xamppp`
 3. query the database with `user.sql` in `BackEnd/resource/db`
 
-All API use for the front-end project [here]https://github.com/JiramedWi/food-receipe-frontend
+All API use for the front-end project [here](https://github.com/JiramedWi/food-receipe-frontend)
